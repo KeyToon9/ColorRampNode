@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1",
+	"FriendlyName": "ColorRampNode",
+	"Description": "A plugin implement Ramp operation like Blender ColorRamp node.",
+	"Category": "Other",
+	"CreatedBy": "KeyToon9",
+	"CreatedByURL": "https://github.com/KeyToon9",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ColorRampNode",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
