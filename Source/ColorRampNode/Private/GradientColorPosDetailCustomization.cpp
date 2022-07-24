@@ -30,7 +30,7 @@ void FGradientColorPosDetailCustomization::CustomizeHeader(
 		if (Curve)
 		{
 			GradientEditor->SetCurveOwner(Curve);
-			GradientEditor->SetUseSRGB(MaterialExpressionColorRamp->bSRGB);
+			GradientEditor->SetUseSRGB(&MaterialExpressionColorRamp->bSRGB);
 			MaterialExpressionColorRamp->RefreshTexture();
 		}
 	}

@@ -43,7 +43,7 @@ public:
 	 */
 	void SetCurveOwner( FCurveOwnerInterface* InCurveOwner );
 
-	void SetUseSRGB(bool sRGB);
+	void SetUseSRGB(bool* sRGB);
 
 private:
 	/**
@@ -202,4 +202,5 @@ private:
 	bool bDraggingStop;
 
 	bool bUseSRGB;
+	bool* bUseSRGBPtr;
 };

@@ -119,7 +119,7 @@ int32 SCustomColorGradientEditor::OnPaint( const FPaintArgs& Args, const FGeomet
 			// Sample the curve
 			FLinearColor Color = CurveOwner->GetLinearColorValue( Time );
 			//Slate MakeGradient call expects the linear colors to be pre-converted to sRGB
-			FColor ColorNosRGB = Color.ToFColor(!bUseSRGB);
+			FColor ColorNosRGB = Color.ToFColor( !(bUseSRGBPtr ? *bUseSRGBPtr : bUseSRGB) );
 			Color = ColorNosRGB.ReinterpretAsLinear();
 			
 			if( !bHasAnyAlphaKeys )
@@ -430,9 +430,11 @@ void SCustomColorGradientEditor::SetCurveOwner( FCurveOwnerInterface* InCurveOwn
 	CurveOwner = InCurveOwner;
 }
 
-void SCustomColorGradientEditor::SetUseSRGB(bool sRGB)
+void SCustomColorGradientEditor::SetUseSRGB(bool* sRGB)
 {
-	bUseSRGB = sRGB;
+	bUseSRGB = *sRGB;
+
+	bUseSRGBPtr = sRGB;
 }
 
 void SCustomColorGradientEditor::OpenGradientStopContextMenu(const FPointerEvent& MouseEvent)
