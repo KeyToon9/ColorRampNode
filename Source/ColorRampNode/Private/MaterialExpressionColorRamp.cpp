@@ -84,6 +84,13 @@ bool FColorStamp::SetFromCurve(TObjectPtr<UCurveLinearColor> CurveLinearColor)
 
 // UMaterialExpressionColorRamp
 
+UMaterialExpressionColorRamp::UMaterialExpressionColorRamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	MenuCategories.Add(LOCTEXT("MateiralExpressionColorRampCategory", "ColorRamp"));
+
+	RefreshParameters();
+}
+
 TObjectPtr<UCurveLinearColor> UMaterialExpressionColorRamp::GetCurve()
 {
 	return TempCurvePtr;
@@ -99,11 +106,6 @@ void UMaterialExpressionColorRamp::GetCaption(TArray<FString>& OutCaptions) cons
 {
 	// Super::GetCaption(OutCaptions);
 	OutCaptions.Add(TEXT("ColorRamp"));
-}
-
-UMaterialExpressionColorRamp::UMaterialExpressionColorRamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-	MenuCategories.Add(LOCTEXT("MateiralExpressionColorRampCategory", "ColorRamp"));
 }
 
 int32 UMaterialExpressionColorRamp::Compile(FMaterialCompiler* Compiler, int32 OutputIndex)
@@ -170,15 +172,18 @@ UMaterialExpressionColorRamp::~UMaterialExpressionColorRamp()
 
 void UMaterialExpressionColorRamp::RefreshParameters()
 {
-	TempTextureName = "ColorRampTempTex_" + this->GetAssetOwner()->GetName() + "_" + this->GetName();
-	TempCurveName = "ColorRampTempCurve_" + this->GetAssetOwner()->GetName() + "_" + this->GetName();
+	if (IsValid(this->GetAssetOwner()))
+	{
+		TempTextureName = "ColorRampTempTex_" + this->GetAssetOwner()->GetName() + "_" + this->GetName();
+		TempCurveName = "ColorRampTempCurve_" + this->GetAssetOwner()->GetName() + "_" + this->GetName();
 	
-	ColorStamp.ColorPosArray.Sort();
-	RefreshTexture();
-	if (!IsValid(TempCurvePtr) || !OnUpdateCurveHandle.IsValid())
-		GenerateRampCurve();
+		ColorStamp.ColorPosArray.Sort();
+		RefreshTexture();
+		if (!IsValid(TempCurvePtr) || !OnUpdateCurveHandle.IsValid())
+			GenerateRampCurve();
 
-	ColorStamp.SetCurveLinearColor(TempCurvePtr, RampType);
+		ColorStamp.SetCurveLinearColor(TempCurvePtr, RampType);
+	}
 }
 
 FColor UMaterialExpressionColorRamp::GetCurrentColor(int32 Pos)
