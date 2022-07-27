@@ -121,10 +121,11 @@ int32 UMaterialExpressionColorRamp::Compile(FMaterialCompiler* Compiler, int32 O
 			return Result;
 		}
 
-		if (!TempRampTexPtr || !TempCurvePtr || !OnUpdateCurveHandle.IsValid())
-		{
-			RefreshParameters();
-		}
+		RefreshParameters();
+		// if (!TempRampTexPtr || !TempCurvePtr || !OnUpdateCurveHandle.IsValid())
+		// {
+		// 	RefreshParameters();
+		// }
 		
 		Result = LinearRamp(Factor.Compile(Compiler), Compiler);
 
@@ -188,36 +189,43 @@ void UMaterialExpressionColorRamp::RefreshParameters()
 
 FColor UMaterialExpressionColorRamp::GetCurrentColor(int32 Pos)
 {
-	float Weight = float(Pos) / float(Resolution);
-
-	for (int32 i = 0; i < ColorStamp.ColorPosArray.Num()-1; ++i)
+	float Time = float(Pos) / float(Resolution);
+	
+	if (!bUseCustomCurveLinearColor)
 	{
-		if (Weight <= ColorStamp.ColorPosArray[i].Position)
+		for (int32 i = 0; i < ColorStamp.ColorPosArray.Num()-1; ++i)
 		{
-			// if (RampType == CRT_LINEAR)
+			if (Time <= ColorStamp.ColorPosArray[i].Position)
+			{
+				// if (RampType == CRT_LINEAR)
 				return ColorStamp.ColorPosArray[i].Color.ToFColor(!bSRGB);
-			// else if (RampType == CRT_CONSTANT)
-			// 	return ColorStamp.ColorPosArray[i].Color.ToFColor(true);
-		}
-		if (ColorStamp.ColorPosArray[i].Position < Weight && Weight <= ColorStamp.ColorPosArray[i+1].Position)
-		{
-			if (RampType == CRT_LINEAR)
-			{
-				float Progress = (Weight - ColorStamp.ColorPosArray[i].Position) / (ColorStamp.ColorPosArray[i+1].Position - ColorStamp.ColorPosArray[i].Position);
-				FLinearColor Color = ColorStamp.ColorPosArray[i].Color * (1 - Progress) + ColorStamp.ColorPosArray[i+1].Color * Progress;
-				return Color.ToFColor(!bSRGB);
+				// else if (RampType == CRT_CONSTANT)
+				// 	return ColorStamp.ColorPosArray[i].Color.ToFColor(true);
 			}
-			else if (RampType == CRT_CONSTANT)
+			if (ColorStamp.ColorPosArray[i].Position < Time && Time <= ColorStamp.ColorPosArray[i+1].Position)
 			{
-				return ColorStamp.ColorPosArray[i].Color.ToFColor(true);
+				if (RampType == CRT_LINEAR)
+				{
+					float Progress = (Time - ColorStamp.ColorPosArray[i].Position) / (ColorStamp.ColorPosArray[i+1].Position - ColorStamp.ColorPosArray[i].Position);
+					FLinearColor Color = ColorStamp.ColorPosArray[i].Color * (1 - Progress) + ColorStamp.ColorPosArray[i+1].Color * Progress;
+					return Color.ToFColor(!bSRGB);
+				}
+				else if (RampType == CRT_CONSTANT)
+				{
+					return ColorStamp.ColorPosArray[i].Color.ToFColor(true);
+				}
 			}
-		}
-		// Last Color
-		if (ColorStamp.ColorPosArray[i+1].Position < Weight && i+1 == ColorStamp.ColorPosArray.Num()-1)
-		{
-			// if (RampType == CRT_LINEAR)
+			// Last Color
+			if (ColorStamp.ColorPosArray[i+1].Position < Time && i+1 == ColorStamp.ColorPosArray.Num()-1)
+			{
+				// if (RampType == CRT_LINEAR)
 				return ColorStamp.ColorPosArray[i+1].Color.ToFColor(!bSRGB);
+			}
 		}
+	}
+	else if (IsValid(CustomCurveLinearColor))
+	{
+		return CustomCurveLinearColor->GetLinearColorValue(Time).ToFColor(true);
 	}
 
 	return FColor(0, 0, 0, 255);

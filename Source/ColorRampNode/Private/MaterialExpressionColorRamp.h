@@ -61,22 +61,28 @@ public:
 
 	UPROPERTY(meta = (RequiredInput = "false"))
 	FExpressionInput Factor;
-
-	UPROPERTY(EditAnywhere, Category=MateiralExpressionColorRamp)
-	TEnumAsByte<EColorRampType> RampType = CRT_LINEAR;
 	
 	/** only used if Factor is not hooked up */
-	UPROPERTY(EditAnywhere, Category=MateiralExpressionColorRamp, meta=(OverridingInputProperty = "Factor"))
+	UPROPERTY(EditAnywhere, Category=Default, meta=(OverridingInputProperty = "Factor", EditCondition = "!Factor.IsConnected()"))
 	FLinearColor ConstFac;
 
-	UPROPERTY(EditAnywhere, Category=MateiralExpressionColorRampGradient, DisplayName="sRGB")
+	UPROPERTY(EditAnywhere, Category=Gradient)
+	TEnumAsByte<EColorRampType> RampType = CRT_LINEAR;
+	
+	UPROPERTY(EditAnywhere, Category=Gradient, DisplayName="sRGB", meta=(EditCondition = "bUseCustomCurveLinearColor == false"))
 	bool bSRGB = false;
 
-	UPROPERTY(EditAnywhere, Category=MateiralExpressionColorRampGradient, meta=(ToolTip = "Only show linear color gradient."))
+	UPROPERTY(EditAnywhere, Category=Gradient, meta=(ToolTip = "Only show linear color gradient.", EditCondition = "bUseCustomCurveLinearColor == false"))
 	FColorStamp ColorStamp;
 
-	UPROPERTY(EditAnywhere, Category=MateiralExpressionColorRampGradient, AdvancedDisplay, meta=(ToolTip = "Color Gradient Texture Width"))
-	int32 Resolution = 1024;
+	UPROPERTY(EditAnywhere, Category=Gradient, AdvancedDisplay, meta=(ToolTip = "Color Gradient Texture Width"))
+	int32 Resolution = 512;
+
+	UPROPERTY(EditAnywhere, Category=CustomCurve)
+	bool bUseCustomCurveLinearColor = false;
+
+	UPROPERTY(EditAnywhere, Category=CustomCurve, meta=(EditCondition = "bUseCustomCurveLinearColor"))
+	TObjectPtr<UCurveLinearColor> CustomCurveLinearColor;
 
 	TObjectPtr<UCurveLinearColor> GetCurve();
 
